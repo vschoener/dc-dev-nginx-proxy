@@ -1,0 +1,52 @@
+version: '3.5'
+
+services:
+    nginx-reverse:
+        image: jwilder/nginx-proxy
+        ports: 
+            - 80:80
+        restart: always
+        container_name: nginx-reverse
+        volumes:
+            - /var/run/docker.sock:/tmp/docker.sock:ro
+        networks:
+            - local.dev
+
+    maildev:
+        container_name: maildev
+        image: "djfarrelly/maildev"
+        ports:
+            - "1080:80"
+            - "1025:25"
+        networks:
+            - local.dev
+        restart: always
+
+    mysql:
+        container_name: mysql
+        image: mysql:5.7
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+        volumes:
+            - db:/var/lib/mysql
+        ports:
+            - 3306:3306
+        networks:
+            - local.dev
+        restart: always
+
+    redis:
+        container_name: redis
+        image: redis
+        networks:
+            - local.dev
+        ports:
+            - 6379:6379
+        restart: always
+
+networks:
+    local.dev:
+        name: local.dev
+
+volumes:
+    db: {}
